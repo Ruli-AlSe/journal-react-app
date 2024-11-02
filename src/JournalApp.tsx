@@ -1,3 +1,10 @@
+import { AppRouter } from './router/AppRouter';
+import { AppTheme } from './theme';
+
 export const JournalApp = () => {
-  return <h1>JournalApp</h1>;
+  return (
+    <AppTheme>
+      <AppRouter />
+    </AppTheme>
+  );
 };
