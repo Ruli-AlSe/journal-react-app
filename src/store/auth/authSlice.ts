@@ -22,7 +22,7 @@ interface LogoutPayload {
 }
 
 const initialState: AuthState = {
-  status: 'not-authenticated',
+  status: 'checking',
   uuid: null,
   email: null,
   displayName: null,
