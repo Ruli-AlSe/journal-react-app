@@ -6,6 +6,7 @@ import {
   registerUserWithEmailAndPassword,
   UserData,
   loginWithEmailAndPassword,
+  logoutFirebase,
 } from '../../firebase/providers';
 
 export const checkingAuthentication = createAsyncThunk(
@@ -94,3 +95,15 @@ export const startLoginWithEmailAndPassword = createAsyncThunk(
     );
   }
 );
+
+export const startLogout = createAsyncThunk('auth/startLogout', async (_, thunkApi) => {
+  const { dispatch } = thunkApi;
+
+  await logoutFirebase();
+
+  dispatch(
+    logout({
+      errorMessage: null,
+    })
+  );
+});
