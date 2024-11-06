@@ -4,6 +4,7 @@ import { Button, Grid2, Link, TextField, Typography } from '@mui/material';
 import { AuthLayout } from '../layout/AuthLayout';
 import { FormValidationRules, useForm } from '../../hooks';
 import { useState } from 'react';
+import { startCreatingUserWithEmailAndPassword, useAppDispatch } from '../../store';
 
 const formData = {
   email: '',
@@ -18,6 +19,8 @@ const formValidations: FormValidationRules<typeof formData> = {
 };
 
 export const RegisterPage = () => {
+  const dispatch = useAppDispatch();
+
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   const { formState, onInputChange, isFormValid, displayNameValid, emailValid, passwordValid } =
@@ -29,6 +32,8 @@ export const RegisterPage = () => {
     setFormSubmitted(true);
 
     if (!isFormValid) return;
+
+    dispatch(startCreatingUserWithEmailAndPassword({ email, password, displayName }));
 
     console.log(formState);
   };

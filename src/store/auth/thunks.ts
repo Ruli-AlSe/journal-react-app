@@ -1,6 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+
 import { checkingCredentials, login, logout } from './authSlice';
-import { signInWithGoogle } from '../../firebase/providers';
+import {
+  signInWithGoogle,
+  registerUserWithEmailAndPassword,
+  UserData,
+} from '../../firebase/providers';
 
 export const checkingAuthentication = createAsyncThunk(
   'auth/checkingAuthentication',
@@ -40,3 +45,15 @@ export const startGoogleSignIn = createAsyncThunk('auth/startGoogleSignIn', asyn
     throw error;
   }
 });
+
+export const startCreatingUserWithEmailAndPassword = createAsyncThunk(
+  'auth/startCreatingUserWithEmailAndPassword',
+  async (userData: UserData, thunkApi) => {
+    const { dispatch } = thunkApi;
+
+    dispatch(checkingCredentials());
+
+    const resp = await registerUserWithEmailAndPassword(userData);
+    console.log({ resp });
+  }
+);
