@@ -12,8 +12,11 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
+import { useAppSelector } from '../../store';
 
 export const Sidebar = ({ drawerWidth }: { drawerWidth: number }) => {
+  const { displayName } = useAppSelector((state) => state.auth);
+
   return (
     <Box component="nav" sx={{ width: { sm: drawerWidth } }} flexShrink={{ sm: 0 }}>
       <Drawer
@@ -26,7 +29,7 @@ export const Sidebar = ({ drawerWidth }: { drawerWidth: number }) => {
       >
         <Toolbar>
           <Typography variant="h6" noWrap component="div">
-            Raul Almanza
+            {displayName}
           </Typography>
         </Toolbar>
 
