@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { checkingCredentials } from './authSlice';
+import { checkingCredentials, login, logout } from './authSlice';
+import { signInWithGoogle } from '../../firebase/providers';
 
 export const checkingAuthentication = createAsyncThunk(
   'auth/checkingAuthentication',
@@ -19,6 +20,21 @@ export const startGoogleSignIn = createAsyncThunk('auth/startGoogleSignIn', asyn
     const { dispatch } = thunkAPI;
 
     dispatch(checkingCredentials());
+
+    const result = await signInWithGoogle();
+
+    if (!result.ok) {
+      return dispatch(logout({ errorMessage: result.errorMessage ?? null }));
+    }
+
+    dispatch(
+      login({
+        uuid: String(result.uid),
+        email: String(result.email),
+        displayName: String(result.displayName),
+        photoURL: String(result.photoURL),
+      })
+    );
   } catch (error) {
     console.error(error);
     throw error;
