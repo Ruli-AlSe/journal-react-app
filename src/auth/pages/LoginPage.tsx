@@ -2,27 +2,67 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Button, Grid2, Link, TextField, Typography } from '@mui/material';
 import { Google } from '@mui/icons-material';
 import { AuthLayout } from '../layout/AuthLayout';
+import { useForm } from '../../hooks';
+import { checkingAuthentication, startGoogleSignIn } from '../../store';
+import { useAppDispatch } from '../../store';
 
 export const LoginPage = () => {
+  const dispatch = useAppDispatch();
+  const { formState, onInputChange } = useForm({
+    email: 'raul@example.com',
+    password: '123456',
+  });
+
+  const { email, password } = formState;
+
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    dispatch(checkingAuthentication());
+    console.log(formState);
+  };
+
+  const onGoogleSignIn = () => {
+    dispatch(startGoogleSignIn());
+
+    console.log('onGoogleSignIn');
+  };
+
   return (
     <AuthLayout title="Login">
-      <form>
+      <form onSubmit={onSubmit}>
         <Grid2 container direction="column">
           <Grid2 container sx={{ mt: 2 }}>
-            <TextField label="Email" type="email" placeholder="email@example.com" fullWidth />
+            <TextField
+              label="Email"
+              type="email"
+              placeholder="email@example.com"
+              fullWidth
+              name="email"
+              value={email}
+              onChange={onInputChange}
+            />
           </Grid2>
           <Grid2 container sx={{ mt: 2 }}>
-            <TextField label="Password" type="password" placeholder="password" fullWidth />
+            <TextField
+              label="P assword"
+              type="password"
+              placeholder="password"
+              fullWidth
+              name="password"
+              value={password}
+              onChange={onInputChange}
+            />
           </Grid2>
 
           <Grid2 container spacing={2} sx={{ mb: 2, mt: 1 }}>
             <Grid2 size={{ xs: 12, sm: 6 }}>
-              <Button variant="contained" fullWidth>
+              <Button variant="contained" fullWidth type="submit">
                 Login
               </Button>
             </Grid2>
             <Grid2 size={{ xs: 12, sm: 6 }}>
-              <Button variant="contained" fullWidth>
+              <Button variant="contained" fullWidth onClick={onGoogleSignIn}>
                 <Google />
                 <Typography sx={{ ml: 1 }}>Google</Typography>
               </Button>
