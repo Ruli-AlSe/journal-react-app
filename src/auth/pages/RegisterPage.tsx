@@ -1,10 +1,10 @@
 import { Link as RouterLink } from 'react-router-dom';
-import { Button, Grid2, Link, TextField, Typography } from '@mui/material';
+import { Alert, Button, Grid2, Link, TextField, Typography } from '@mui/material';
 
 import { AuthLayout } from '../layout/AuthLayout';
 import { FormValidationRules, useForm } from '../../hooks';
-import { useState } from 'react';
-import { startCreatingUserWithEmailAndPassword, useAppDispatch } from '../../store';
+import { useMemo, useState } from 'react';
+import { startCreatingUserWithEmailAndPassword, useAppDispatch, useAppSelector } from '../../store';
 
 const formData = {
   email: '',
@@ -27,11 +27,14 @@ export const RegisterPage = () => {
     useForm(formData, formValidations);
   const { email, password, displayName } = formState;
 
+  const { status, errorMessage } = useAppSelector((state) => state.auth);
+  const isCheckingAuthentication = useMemo(() => status === 'checking', [status]);
+
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFormSubmitted(true);
 
-    if (!isFormValid) return;
+    if (!isFormValid || isCheckingAuthentication) return;
 
     dispatch(startCreatingUserWithEmailAndPassword({ email, password, displayName }));
 
@@ -83,8 +86,17 @@ export const RegisterPage = () => {
           </Grid2>
 
           <Grid2 container spacing={2} sx={{ mb: 2, mt: 1 }}>
+            <Grid2 size={{ xs: 12 }} display={!!errorMessage ? '' : 'none'}>
+              <Alert severity="error">{errorMessage}</Alert>
+            </Grid2>
+
             <Grid2 size={{ xs: 12 }}>
-              <Button variant="contained" fullWidth type="submit">
+              <Button
+                variant="contained"
+                fullWidth
+                type="submit"
+                disabled={isCheckingAuthentication}
+              >
                 Create Account
               </Button>
             </Grid2>

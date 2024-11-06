@@ -37,7 +37,7 @@ export const authSlice = createSlice({
     login: (state, action: PayloadAction<LoginPayload>) => {
       const { uuid, email, displayName, photoURL } = action.payload;
 
-      state.status = 'not-authenticated';
+      state.status = 'authenticated';
       state.uuid = uuid;
       state.email = email;
       state.displayName = displayName;
