@@ -1,11 +1,16 @@
-import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { FisebaseAuth } from './config';
+import {
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  updateProfile,
+} from 'firebase/auth';
+import { FirebaseAuth } from './config';
 
 const googleProvider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
   try {
-    const result = await signInWithPopup(FisebaseAuth, googleProvider);
+    const result = await signInWithPopup(FirebaseAuth, googleProvider);
     // const credentials = GoogleAuthProvider.credentialFromResult(result);
 
     const { displayName, email, photoURL, uid } = result.user;
@@ -39,8 +44,14 @@ export const registerUserWithEmailAndPassword = async ({
   displayName,
 }: UserData) => {
   try {
-    const resp = await createUserWithEmailAndPassword(FisebaseAuth, email, password);
+    const resp = await createUserWithEmailAndPassword(FirebaseAuth, email, password);
     const { uid, photoURL } = resp.user;
+
+    if (!FirebaseAuth.currentUser) {
+      throw new Error('User not found');
+    }
+
+    await updateProfile(FirebaseAuth.currentUser, { displayName });
 
     return {
       ok: true,

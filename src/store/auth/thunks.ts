@@ -53,7 +53,19 @@ export const startCreatingUserWithEmailAndPassword = createAsyncThunk(
 
     dispatch(checkingCredentials());
 
-    const resp = await registerUserWithEmailAndPassword(userData);
-    console.log({ resp });
+    const result = await registerUserWithEmailAndPassword(userData);
+
+    if (!result.ok) {
+      return dispatch(logout({ errorMessage: result.errorMessage ?? null }));
+    }
+
+    dispatch(
+      login({
+        uuid: String(result.uid),
+        email: String(result.email),
+        displayName: String(result.displayName),
+        photoURL: String(result.photoURL),
+      })
+    );
   }
 );
