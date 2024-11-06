@@ -1,35 +1,32 @@
 import { Link as RouterLink } from 'react-router-dom';
-import { Button, Grid2, Link, TextField, Typography } from '@mui/material';
+import { Alert, Button, Grid2, Link, TextField, Typography } from '@mui/material';
 import { Google } from '@mui/icons-material';
 import { AuthLayout } from '../layout/AuthLayout';
 import { useForm } from '../../hooks';
-import { checkingAuthentication, startGoogleSignIn, useAppSelector } from '../../store';
+import { startGoogleSignIn, startLoginWithEmailAndPassword, useAppSelector } from '../../store';
 import { useAppDispatch } from '../../store';
 import { useMemo } from 'react';
 
 export const LoginPage = () => {
-  const { status } = useAppSelector((state) => state.auth);
+  const { status, errorMessage } = useAppSelector((state) => state.auth);
   const isAuthenticating = useMemo(() => status === 'checking', [status]);
 
   const dispatch = useAppDispatch();
 
   const { formState, onInputChange } = useForm({
-    email: 'raul@example.com',
-    password: '123456',
+    email: '',
+    password: '',
   });
   const { email, password } = formState;
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    dispatch(checkingAuthentication());
-    console.log(formState);
+    dispatch(startLoginWithEmailAndPassword({ email, password }));
   };
 
   const onGoogleSignIn = () => {
     dispatch(startGoogleSignIn());
-
-    console.log('onGoogleSignIn');
   };
 
   return (
@@ -49,7 +46,7 @@ export const LoginPage = () => {
           </Grid2>
           <Grid2 container sx={{ mt: 2 }}>
             <TextField
-              label="P assword"
+              label="Password"
               type="password"
               placeholder="password"
               fullWidth
@@ -60,6 +57,10 @@ export const LoginPage = () => {
           </Grid2>
 
           <Grid2 container spacing={2} sx={{ mb: 2, mt: 1 }}>
+            <Grid2 size={{ xs: 12 }} display={!!errorMessage ? '' : 'none'}>
+              <Alert severity="error">{errorMessage}</Alert>
+            </Grid2>
+
             <Grid2 size={{ xs: 12, sm: 6 }}>
               <Button variant="contained" fullWidth type="submit" disabled={isAuthenticating}>
                 Login

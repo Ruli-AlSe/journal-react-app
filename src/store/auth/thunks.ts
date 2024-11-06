@@ -5,6 +5,7 @@ import {
   signInWithGoogle,
   registerUserWithEmailAndPassword,
   UserData,
+  loginWithEmailAndPassword,
 } from '../../firebase/providers';
 
 export const checkingAuthentication = createAsyncThunk(
@@ -54,6 +55,30 @@ export const startCreatingUserWithEmailAndPassword = createAsyncThunk(
     dispatch(checkingCredentials());
 
     const result = await registerUserWithEmailAndPassword(userData);
+
+    if (!result.ok) {
+      return dispatch(logout({ errorMessage: result.errorMessage ?? null }));
+    }
+
+    dispatch(
+      login({
+        uuid: String(result.uid),
+        email: String(result.email),
+        displayName: String(result.displayName),
+        photoURL: String(result.photoURL),
+      })
+    );
+  }
+);
+
+export const startLoginWithEmailAndPassword = createAsyncThunk(
+  'auth/startLoginWithEmailAndPassword',
+  async (userData: UserData, thunkApi) => {
+    const { dispatch } = thunkApi;
+
+    dispatch(checkingCredentials());
+
+    const result = await loginWithEmailAndPassword(userData);
 
     if (!result.ok) {
       return dispatch(logout({ errorMessage: result.errorMessage ?? null }));
