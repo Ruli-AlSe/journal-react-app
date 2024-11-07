@@ -9,10 +9,10 @@ type FormValidations<T extends {}> = {
 };
 
 export const useForm = <T extends {}>(
-  initialState: T,
+  initialForm: T,
   formValidationRules?: FormValidationRules<T>
 ) => {
-  const [formState, setFormState] = useState(initialState);
+  const [formState, setFormState] = useState(initialForm);
   const [formValidation, setFormValidation] = useState<FormValidations<T>>(
     {} as FormValidations<T>
   );
@@ -20,6 +20,10 @@ export const useForm = <T extends {}>(
   useEffect(() => {
     createValidators();
   }, [formState]);
+
+  useEffect(() => {
+    setFormState(initialForm);
+  }, [initialForm]);
 
   const isFormValid = useMemo(() => {
     for (const formValue of Object.keys(formValidation)) {
@@ -38,7 +42,7 @@ export const useForm = <T extends {}>(
   };
 
   const onResetForm = () => {
-    setFormState(initialState);
+    setFormState(initialForm);
   };
 
   const createValidators = () => {
