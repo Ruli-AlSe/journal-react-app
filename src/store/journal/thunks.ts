@@ -3,7 +3,15 @@ import { collection, doc, setDoc } from 'firebase/firestore/lite';
 
 import { RootState } from '../store';
 import { FirebaseDB } from '../../firebase/config';
-import { addNewEmptyNote, Note, savingNewNote, setActiveNote, setNotes } from './journalSlice';
+import {
+  addNewEmptyNote,
+  Note,
+  savingNewNote,
+  setActiveNote,
+  setNotes,
+  setSaving,
+  updateNote,
+} from './journalSlice';
 import { loadNotes } from '../../journal/helpers';
 
 export const startNewNote = createAsyncThunk('journal/startNewNote', async (_, thunkAPI) => {
@@ -47,3 +55,24 @@ export const startLoadingNotes = createAsyncThunk(
     }
   }
 );
+
+export const startSaveNote = createAsyncThunk('journal/startSaveNote', async (_, thunkAPI) => {
+  try {
+    const { getState, dispatch } = thunkAPI;
+    dispatch(setSaving());
+
+    const { uuid } = (getState() as RootState).auth;
+    const { active: note } = (getState() as RootState).journal;
+
+    const noteToFirestore = { ...note };
+    delete noteToFirestore.id;
+
+    const docRef = doc(FirebaseDB, `${uuid}/journal/notes/${note?.id}`);
+    await setDoc(docRef, noteToFirestore, { merge: true });
+
+    dispatch(updateNote(note as Note));
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+});
