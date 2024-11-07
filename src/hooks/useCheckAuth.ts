@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { login, logout, useAppDispatch, useAppSelector } from '../store';
+import { login, logout, startLoadingNotes, useAppDispatch, useAppSelector } from '../store';
 import { onAuthStateChanged } from 'firebase/auth';
 import { FirebaseAuth } from '../firebase/config';
 
@@ -22,6 +22,8 @@ export const useCheckAuth = () => {
           photoURL: String(photoURL),
         })
       );
+
+      dispatch(startLoadingNotes());
     });
   }, []);
 
