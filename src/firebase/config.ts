@@ -7,13 +7,16 @@ import { getFirestore } from 'firebase/firestore/lite';
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
+
+const env = import.meta.env;
+
 const firebaseConfig = {
-  apiKey: 'AIzaSyCEebCdF-JZp_sAngGXYvtClBK6JLrzfmY',
-  authDomain: 'react-projects-f945f.firebaseapp.com',
-  projectId: 'react-projects-f945f',
-  storageBucket: 'react-projects-f945f.firebasestorage.app',
-  messagingSenderId: '541906265198',
-  appId: '1:541906265198:web:aaa628b701fdfd2234b27f',
+  apiKey: env.VITE_FIREBASE_API_KEY,
+  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: env.VITE_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
