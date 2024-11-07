@@ -3,7 +3,8 @@ import { collection, doc, setDoc } from 'firebase/firestore/lite';
 
 import { RootState } from '../store';
 import { FirebaseDB } from '../../firebase/config';
-import { addNewEmptyNote, Note, savingNewNote, setActiveNote } from './journalSlice';
+import { addNewEmptyNote, Note, savingNewNote, setActiveNote, setNotes } from './journalSlice';
+import { loadNotes } from '../../journal/helpers';
 
 export const startNewNote = createAsyncThunk('journal/startNewNote', async (_, thunkAPI) => {
   try {
@@ -28,3 +29,21 @@ export const startNewNote = createAsyncThunk('journal/startNewNote', async (_, t
     throw error;
   }
 });
+
+export const startLoadingNotes = createAsyncThunk(
+  'journal/startLoadingNotes',
+  async (_, thunkAPI) => {
+    try {
+      const { dispatch, getState } = thunkAPI;
+      const { uuid } = (getState() as RootState).auth;
+      console.log(uuid);
+
+      const notes = await loadNotes(uuid);
+
+      dispatch(setNotes(notes));
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+);
