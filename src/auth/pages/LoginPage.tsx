@@ -7,16 +7,18 @@ import { startGoogleSignIn, startLoginWithEmailAndPassword, useAppSelector } fro
 import { useAppDispatch } from '../../store';
 import { useMemo } from 'react';
 
+const formData = {
+  email: '',
+  password: '',
+};
+
 export const LoginPage = () => {
   const { status, errorMessage } = useAppSelector((state) => state.auth);
   const isAuthenticating = useMemo(() => status === 'checking', [status]);
 
   const dispatch = useAppDispatch();
 
-  const { formState, onInputChange } = useForm({
-    email: '',
-    password: '',
-  });
+  const { formState, onInputChange } = useForm(formData);
   const { email, password } = formState;
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
