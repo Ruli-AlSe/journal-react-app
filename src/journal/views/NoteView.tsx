@@ -1,14 +1,16 @@
+import { useEffect, useMemo } from 'react';
 import { SaveOutlined } from '@mui/icons-material';
 import { Button, Grid2, TextField, Typography } from '@mui/material';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.css';
 
 import { ImageGallery } from '../components';
 import { Note, setActiveNote, startSaveNote, useAppDispatch, useAppSelector } from '../../store';
 import { useForm } from '../../hooks';
-import { useEffect, useMemo } from 'react';
 
 export const NoteView = () => {
   const dispatch = useAppDispatch();
-  const { active: note } = useAppSelector((state) => state.journal);
+  const { active: note, messageSaved, isSaving } = useAppSelector((state) => state.journal);
 
   const { formState, onInputChange } = useForm(note as Note);
   const { title, body, date } = formState;
@@ -22,6 +24,12 @@ export const NoteView = () => {
   useEffect(() => {
     dispatch(setActiveNote(formState));
   }, [formState]);
+
+  useEffect(() => {
+    if (messageSaved.length > 0) {
+      Swal.fire('Note updated', messageSaved, 'success');
+    }
+  }, [messageSaved]);
 
   const onSaveNote = () => {
     dispatch(startSaveNote());
@@ -39,7 +47,7 @@ export const NoteView = () => {
         <Typography fontSize={39} fontWeight="light">
           {dateString}
         </Typography>
-        <Button color="primary" sx={{ padding: 2 }} onClick={onSaveNote}>
+        <Button color="primary" sx={{ padding: 2 }} onClick={onSaveNote} disabled={isSaving}>
           <SaveOutlined sx={{ fontSize: 30, mr: 1 }} />
           Save
         </Button>
