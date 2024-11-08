@@ -1,11 +1,18 @@
-import { useEffect, useMemo } from 'react';
-import { SaveOutlined } from '@mui/icons-material';
-import { Button, Grid2, TextField, Typography } from '@mui/material';
+import { useEffect, useMemo, useRef } from 'react';
+import { SaveOutlined, UploadOutlined } from '@mui/icons-material';
+import { Button, Grid2, IconButton, TextField, Typography } from '@mui/material';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.css';
 
 import { ImageGallery } from '../components';
-import { Note, setActiveNote, startSaveNote, useAppDispatch, useAppSelector } from '../../store';
+import {
+  Note,
+  setActiveNote,
+  startSaveNote,
+  startUploadingFiles,
+  useAppDispatch,
+  useAppSelector,
+} from '../../store';
 import { useForm } from '../../hooks';
 
 export const NoteView = () => {
@@ -21,6 +28,8 @@ export const NoteView = () => {
     return newDate.toUTCString();
   }, [date]);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     dispatch(setActiveNote(formState));
   }, [formState]);
@@ -35,6 +44,12 @@ export const NoteView = () => {
     dispatch(startSaveNote());
   };
 
+  const onFileInputChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+    if (target.files === null || target.files.length === 0) return;
+
+    dispatch(startUploadingFiles(target.files));
+  };
+
   return (
     <Grid2
       container
@@ -43,14 +58,34 @@ export const NoteView = () => {
       sx={{ mb: 1 }}
       className="animate__animated animate__fadeIn animate__faster"
     >
-      <Grid2 container display="flex" direction="row">
-        <Typography fontSize={39} fontWeight="light">
-          {dateString}
-        </Typography>
-        <Button color="primary" sx={{ padding: 2 }} onClick={onSaveNote} disabled={isSaving}>
-          <SaveOutlined sx={{ fontSize: 30, mr: 1 }} />
-          Save
-        </Button>
+      <Grid2 container display="flex" direction="row" justifyContent="space-between">
+        <Grid2 display="flex" justifyContent="left">
+          <Typography fontSize={39} fontWeight="light">
+            {dateString}
+          </Typography>
+        </Grid2>
+
+        <Grid2 display="flex" justifyContent="right">
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            onChange={onFileInputChange}
+            style={{ display: 'none' }}
+          />
+
+          <IconButton
+            color="primary"
+            disabled={isSaving}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <UploadOutlined />
+          </IconButton>
+          <Button color="primary" sx={{ padding: 2 }} onClick={onSaveNote} disabled={isSaving}>
+            <SaveOutlined sx={{ fontSize: 30, mr: 1 }} />
+            Save
+          </Button>
+        </Grid2>
       </Grid2>
 
       <Grid2 container>
@@ -78,7 +113,7 @@ export const NoteView = () => {
         />
       </Grid2>
 
-      <ImageGallery />
+      <ImageGallery images={note?.imageUrls} />
     </Grid2>
   );
 };
