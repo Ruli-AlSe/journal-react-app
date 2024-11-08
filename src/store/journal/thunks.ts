@@ -9,10 +9,11 @@ import {
   savingNewNote,
   setActiveNote,
   setNotes,
+  setPhotosToActiveNote,
   setSaving,
   updateNote,
 } from './journalSlice';
-import { loadNotes } from '../../journal/helpers';
+import { fileUpload, loadNotes } from '../../journal/helpers';
 
 export const startNewNote = createAsyncThunk('journal/startNewNote', async (_, thunkAPI) => {
   try {
@@ -76,3 +77,25 @@ export const startSaveNote = createAsyncThunk('journal/startSaveNote', async (_,
     throw error;
   }
 });
+
+export const startUploadingFiles = createAsyncThunk(
+  'journal/startUploadingFiles',
+  async (files: FileList, thunkAPI) => {
+    try {
+      const { dispatch } = thunkAPI;
+      dispatch(setSaving());
+
+      const fileUploadPromises = [];
+      for (const file of files) {
+        fileUploadPromises.push(fileUpload(file));
+      }
+
+      const photosUrls = await Promise.all(fileUploadPromises);
+
+      dispatch(setPhotosToActiveNote(photosUrls));
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+);
