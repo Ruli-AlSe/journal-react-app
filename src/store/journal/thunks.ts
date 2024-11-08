@@ -1,10 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { collection, doc, setDoc } from 'firebase/firestore/lite';
+import { collection, deleteDoc, doc, setDoc } from 'firebase/firestore/lite';
 
 import { RootState } from '../store';
 import { FirebaseDB } from '../../firebase/config';
 import {
   addNewEmptyNote,
+  deleteNoteById,
   Note,
   savingNewNote,
   setActiveNote,
@@ -25,6 +26,7 @@ export const startNewNote = createAsyncThunk('journal/startNewNote', async (_, t
       title: '',
       body: '',
       date: new Date().getTime(),
+      imageUrls: [] as string[],
     } as Note;
 
     const newDoc = doc(collection(FirebaseDB, `${uuid}/journal/notes`));
@@ -93,6 +95,25 @@ export const startUploadingFiles = createAsyncThunk(
       const photosUrls = await Promise.all(fileUploadPromises);
 
       dispatch(setPhotosToActiveNote(photosUrls));
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+);
+
+export const startDeletingNote = createAsyncThunk(
+  'journal/startDeletingNote',
+  async (_, thunkAPI) => {
+    try {
+      const { dispatch, getState } = thunkAPI;
+      const { uuid } = (getState() as RootState).auth;
+      const { active: note } = (getState() as RootState).journal;
+
+      const docRef = doc(FirebaseDB, `${uuid}/journal/notes/${note?.id}`);
+      await deleteDoc(docRef);
+
+      dispatch(deleteNoteById(note!.id));
     } catch (error) {
       console.error(error);
       throw error;
