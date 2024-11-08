@@ -8,6 +8,7 @@ import {
   loginWithEmailAndPassword,
   logoutFirebase,
 } from '../../firebase/providers';
+import { clearNotesLogout } from '../journal/journalSlice';
 
 export const checkingAuthentication = createAsyncThunk(
   'auth/checkingAuthentication',
@@ -101,6 +102,7 @@ export const startLogout = createAsyncThunk('auth/startLogout', async (_, thunkA
 
   await logoutFirebase();
 
+  dispatch(clearNotesLogout());
   dispatch(
     logout({
       errorMessage: null,
