@@ -1,21 +1,10 @@
-import { TurnedInNot } from '@mui/icons-material';
-import {
-  Box,
-  Divider,
-  Drawer,
-  Grid2,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Toolbar,
-  Typography,
-} from '@mui/material';
+import { Box, Divider, Drawer, List, Toolbar, Typography } from '@mui/material';
 import { useAppSelector } from '../../store';
+import { SidebarItem } from './SidebarItem';
 
 export const Sidebar = ({ drawerWidth }: { drawerWidth: number }) => {
   const { displayName } = useAppSelector((state) => state.auth);
+  const { notes } = useAppSelector((state) => state.journal);
 
   return (
     <Box component="nav" sx={{ width: { sm: drawerWidth } }} flexShrink={{ sm: 0 }}>
@@ -36,24 +25,8 @@ export const Sidebar = ({ drawerWidth }: { drawerWidth: number }) => {
         <Divider />
 
         <List>
-          {['January', 'February', 'March', 'April'].map((text) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  <TurnedInNot />
-                </ListItemIcon>
-
-                <Grid2 container>
-                  <ListItemText primary={text} />
-
-                  <ListItemText
-                    secondary={
-                      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.'
-                    }
-                  />
-                </Grid2>
-              </ListItemButton>
-            </ListItem>
+          {notes.map((note) => (
+            <SidebarItem key={note.id} {...note} />
           ))}
         </List>
       </Drawer>
